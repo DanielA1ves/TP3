@@ -1,0 +1,17 @@
+{
+  "name": "tp3-bi-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "@grpc/grpc-js": "^1.10.7",
+    "@grpc/proto-loader": "^0.7.13",
+    "express": "^4.19.2",
+    "graphql": "^16.8.1"
+  }
+}

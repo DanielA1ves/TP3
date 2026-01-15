@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: tp3-postgres
+    environment:
+      POSTGRES_USER: tp3
+      POSTGRES_PASSWORD: tp3
+      POSTGRES_DB: tp3
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+
+  xml-service:
+    build: ./xml-service
+    container_name: tp3-xml-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: tp3
+      DB_PASSWORD: tp3
+      DB_NAME: tp3
+      HTTP_PORT: "8080"
+      GRPC_PORT: "9090"
+      DEFAULT_WEBHOOK_URL: http://processor:3000/webhook
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+
+  processor:
+    build: ./processor
+    container_name: tp3-processor
+    environment:
+      PORT: "3000"
+      S3_ENDPOINT: "${S3_ENDPOINT}"
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY}"
+      S3_REGION: "${S3_REGION:-us-east-1}"
+      S3_BUCKET: "${S3_BUCKET}"
+      S3_PREFIX: "${S3_PREFIX:-inbound/}"
+      XML_SERVICE_URL: "http://xml-service:8080/upload"
+      WEBHOOK_URL: "http://processor:3000/webhook"
+      GEOCODING_API_URL: "${GEOCODING_API_URL:-https://nominatim.openstreetmap.org/search}"
+      GEOCODING_COUNTRY_CODE: "${GEOCODING_COUNTRY_CODE:-us}"
+      GEOCODING_MIN_DELAY_MS: "${GEOCODING_MIN_DELAY_MS:-1000}"
+      NOMINATIM_USER_AGENT: "${NOMINATIM_USER_AGENT:-tp3-processor/1.0}"
+      NOMINATIM_EMAIL: "${NOMINATIM_EMAIL}"
+      WEATHER_ARCHIVE_API_URL: "${WEATHER_ARCHIVE_API_URL:-https://archive-api.open-meteo.com/v1/archive}"
+      WEATHER_FORECAST_API_URL: "${WEATHER_FORECAST_API_URL:-https://api.open-meteo.com/v1/forecast}"
+      WEATHER_HISTORY_DAYS: "${WEATHER_HISTORY_DAYS:-30}"
+      WEATHER_FORECAST_DAYS: "${WEATHER_FORECAST_DAYS:-7}"
+      DELETE_AFTER_PROCESS: "${DELETE_AFTER_PROCESS:-true}"
+      POLL_INTERVAL_MS: "${POLL_INTERVAL_MS:-15000}"
+    depends_on:
+      - xml-service
+    ports:
+      - "3000:3000"
+
+  bi-service:
+    build: ./bi-service
+    container_name: tp3-bi-service
+    environment:
+      PORT: "4000"
+      GRPC_TARGET: "xml-service:9090"
+    depends_on:
+      - xml-service
+    ports:
+      - "4000:4000"

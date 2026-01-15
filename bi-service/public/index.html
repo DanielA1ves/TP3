@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>NPS Parks + Climate Snapshot</title>
+    <style>
+      :root {
+        --bg-1: #f7f0e8;
+        --bg-2: #d9ebe4;
+        --ink: #1b2420;
+        --muted: #516057;
+        --card: #ffffff;
+        --accent: #e6763c;
+        --accent-dark: #c75a27;
+        --ring: rgba(230, 118, 60, 0.22);
+        --shadow: 0 18px 40px rgba(39, 51, 44, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family: "Trebuchet MS", "Lucida Sans", "Gill Sans", sans-serif;
+        background:
+          radial-gradient(1200px 600px at 80% -20%, rgba(230, 118, 60, 0.18), transparent 70%),
+          radial-gradient(900px 400px at -10% 20%, rgba(60, 142, 120, 0.2), transparent 60%),
+          linear-gradient(140deg, var(--bg-1), var(--bg-2));
+      }
+
+      .shell {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 40px 20px 64px;
+      }
+
+      header {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 28px;
+        animation: fadeUp 0.8s ease both;
+      }
+
+      .title {
+        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+        font-size: clamp(2.2rem, 2.2rem + 1vw, 3.2rem);
+        letter-spacing: 0.02em;
+        margin: 0;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        max-width: 680px;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.4fr);
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(81, 96, 87, 0.1);
+        pointer-events: none;
+      }
+
+      .card h2 {
+        margin: 0 0 18px;
+        font-size: 1.2rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      select,
+      input[type="date"],
+      input[type="text"] {
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(81, 96, 87, 0.25);
+        font-size: 1rem;
+        font-family: inherit;
+        background: #faf9f7;
+        color: var(--ink);
+        outline: none;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      select:focus,
+      input[type="date"]:focus,
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--ring);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .chip {
+        border: none;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(230, 118, 60, 0.15);
+        color: var(--accent-dark);
+        cursor: pointer;
+        font-weight: 600;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .chip:hover {
+        transform: translateY(-1px);
+        background: rgba(230, 118, 60, 0.24);
+      }
+
+      .submit {
+        margin-left: auto;
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: none;
+        background: var(--accent);
+        color: #fffaf5;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        box-shadow: 0 12px 24px rgba(199, 90, 39, 0.25);
+      }
+
+      .submit:hover {
+        transform: translateY(-1px);
+        background: var(--accent-dark);
+      }
+
+      .submit:disabled {
+        cursor: wait;
+        opacity: 0.7;
+        transform: none;
+      }
+
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .toggle input {
+        accent-color: var(--accent);
+        width: 16px;
+        height: 16px;
+      }
+
+      .results {
+        display: grid;
+        gap: 16px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .metric {
+        border-radius: 16px;
+        padding: 16px;
+        background: #fdfaf7;
+        border: 1px solid rgba(81, 96, 87, 0.15);
+        display: grid;
+        gap: 6px;
+      }
+
+      .metric .value {
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+
+      .metric .label {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .insight {
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(60, 142, 120, 0.15);
+        color: #1c3b30;
+        font-weight: 600;
+      }
+
+      .status {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .status[data-tone="error"] {
+        color: #a2311b;
+      }
+
+      .status[data-tone="success"] {
+        color: #17664d;
+      }
+
+      .card.animate-1 {
+        animation: fadeUp 0.9s ease both;
+        animation-delay: 0.1s;
+      }
+
+      .card.animate-2 {
+        animation: fadeUp 0.9s ease both;
+        animation-delay: 0.22s;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .actions {
+          justify-content: space-between;
+        }
+        .submit {
+          width: 100%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <h1 class="title">NPS Parks + Climate Snapshot</h1>
+        <p class="subtitle">
+          Explore U.S. national parks by state and compare daily temperature and
+          precipitation averages from Open-Meteo (mm for past, % for future).
+        </p>
+      </header>
+
+      <main class="grid">
+        <section class="card animate-1">
+          <h2>Query Builder</h2>
+          <form id="query-form">
+            <label>
+              State
+              <input
+                id="state"
+                type="text"
+                list="state-options"
+                placeholder="CA or California"
+                value="CA"
+              />
+              <datalist id="state-options">
+                <option value="CA">California</option>
+                <option value="AZ">Arizona</option>
+                <option value="UT">Utah</option>
+                <option value="CO">Colorado</option>
+                <option value="NM">New Mexico</option>
+              </datalist>
+            </label>
+
+            <div class="row">
+              <label>
+                From date
+                <input id="from-date" type="date" />
+              </label>
+              <label>
+                To date
+                <input id="to-date" type="date" />
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="chip" type="button" data-range="7">Last 7 days</button>
+              <button class="chip" type="button" data-range="30">Last 30 days</button>
+              <label class="toggle">
+                <input id="use-default" type="checkbox" />
+                Use server default window
+              </label>
+              <button class="submit" type="submit">Run query</button>
+            </div>
+
+            <div class="status" id="status" data-tone="idle">
+              Ready.
+            </div>
+          </form>
+        </section>
+
+        <section class="card animate-2 results">
+          <h2>Results</h2>
+            <div class="metrics">
+              <div class="metric">
+              <div class="label">Park Count</div>
+              <div class="value" id="metric-parks">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">Avg Temp (C)</div>
+              <div class="value" id="metric-temp">-</div>
+            </div>
+            <div class="metric">
+              <div class="label" id="metric-precip-label">Avg Precip</div>
+              <div class="value" id="metric-precip">-</div>
+            </div>
+          </div>
+          <div class="insight" id="insight">
+            Run a query to see a quick interpretation.
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const form = document.getElementById("query-form");
+      const stateInput = document.getElementById("state");
+      const fromInput = document.getElementById("from-date");
+      const toInput = document.getElementById("to-date");
+      const useDefault = document.getElementById("use-default");
+      const statusEl = document.getElementById("status");
+      const parksEl = document.getElementById("metric-parks");
+      const tempEl = document.getElementById("metric-temp");
+      const precipEl = document.getElementById("metric-precip");
+      const insightEl = document.getElementById("insight");
+      const submitButton = form.querySelector(".submit");
+
+      function toDateInputValue(date) {
+        return date.toLocaleDateString("en-CA");
+      }
+
+      function setDateRange(days) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - days);
+        fromInput.value = toDateInputValue(start);
+        toInput.value = toDateInputValue(end);
+        useDefault.checked = false;
+      }
+
+      function setStatus(message, tone) {
+        statusEl.textContent = message;
+        statusEl.dataset.tone = tone;
+      }
+
+      function setLoading(isLoading) {
+        submitButton.disabled = isLoading;
+        submitButton.textContent = isLoading ? "Fetching..." : "Run query";
+      }
+
+      function updateMetrics(stats) {
+        const parkCount = Number(stats.parkCount || 0);
+        const avgTemp = Number(stats.avgTempMeanC || 0);
+        const avgPrecipValue = Number(stats.avgPrecipitationValue || 0);
+        const today = new Date();
+        const toDateValue = toInput.value
+          ? new Date(`${toInput.value}T00:00:00`)
+          : null;
+        const useProbability =
+          !useDefault.checked && toDateValue && toDateValue > today;
+
+        parksEl.textContent = parkCount.toString();
+        tempEl.textContent = avgTemp.toFixed(2);
+        const precipLabel = document.getElementById("metric-precip-label");
+        if (useProbability) {
+          precipLabel.textContent = "Avg Precip (%)";
+          precipEl.textContent = `${avgPrecipValue.toFixed(2)}%`;
+        } else {
+          precipLabel.textContent = "Avg Precip (mm)";
+          precipEl.textContent = avgPrecipValue.toFixed(2);
+        }
+
+        if (parkCount === 0) {
+          insightEl.textContent =
+            "No parks found for this state and date range.";
+          return;
+        }
+
+        if (useProbability && avgPrecipValue > 50) {
+          insightEl.textContent =
+            "Higher precipitation expected. Plan for wetter conditions.";
+        } else if (useProbability && avgPrecipValue > 20) {
+          insightEl.textContent =
+            "Moderate precipitation. Good time for mixed-weather planning.";
+        } else if (!useProbability && avgPrecipValue > 5) {
+          insightEl.textContent =
+            "Higher precipitation totals. Expect wetter conditions.";
+        } else if (!useProbability && avgPrecipValue > 1) {
+          insightEl.textContent =
+            "Moderate precipitation totals. Mixed conditions expected.";
+        } else {
+          insightEl.textContent =
+            "Low precipitation. Conditions look relatively dry.";
+        }
+      }
+
+      async function fetchStats() {
+        if (!stateInput.value.trim()) {
+          setStatus("Select a state to query.", "error");
+          return;
+        }
+        if (!useDefault.checked && (!fromInput.value || !toInput.value)) {
+          setStatus("Select a date range or use server default.", "error");
+          return;
+        }
+
+        const variables = {
+          state: stateInput.value.trim(),
+          fromDate: useDefault.checked ? "" : fromInput.value,
+          toDate: useDefault.checked ? "" : toInput.value,
+        };
+
+        setLoading(true);
+        setStatus("Querying park stats...", "idle");
+
+        try {
+          const response = await fetch("/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `
+                  query ($state: String!, $fromDate: String, $toDate: String) {
+                  parkStats(
+                    state: $state,
+                    fromDate: $fromDate,
+                    toDate: $toDate
+                  ) {
+                    state
+                    parkCount
+                    avgTempMeanC
+                    avgPrecipitationValue
+                  }
+                }
+              `,
+              variables,
+            }),
+          });
+
+          const payload = await response.json();
+          if (payload.errors) {
+            const message = payload.errors[0]?.message || "Query failed.";
+            throw new Error(message);
+          }
+
+          updateMetrics(payload.data.parkStats);
+          setStatus("Done. Data updated.", "success");
+        } catch (err) {
+          console.error(err);
+          setStatus(`Error: ${err.message}`, "error");
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      document.querySelectorAll("[data-range]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const days = parseInt(button.dataset.range, 10);
+          setDateRange(days);
+        });
+      });
+
+      useDefault.addEventListener("change", () => {
+        if (useDefault.checked) {
+          setStatus("Using server default time window.", "idle");
+        } else {
+          setStatus("Select a date range to refine results.", "idle");
+        }
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        fetchStats();
+      });
+
+      setDateRange(30);
+      fetchStats();
+    </script>
+  </body>
+</html>

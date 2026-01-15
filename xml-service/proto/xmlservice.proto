@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package xmlservice;
+
+option go_package = "xml-service/proto;proto";
+
+service XmlService {
+  rpc GetDocument (GetDocumentRequest) returns (GetDocumentResponse);
+  rpc QueryCurrentPrice (QueryCurrentPriceRequest) returns (QueryCurrentPriceResponse);
+  rpc QueryIncidentStats (QueryIncidentStatsRequest) returns (QueryIncidentStatsResponse);
+}
+
+message GetDocumentRequest {
+  int64 id = 1;
+}
+
+message GetDocumentResponse {
+  int64 id = 1;
+  string xml_document = 2;
+  string created_at = 3;
+  string mapper_version = 4;
+}
+
+message QueryCurrentPriceRequest {
+  string sku = 1;
+}
+
+message QueryCurrentPriceResponse {
+  string sku = 1;
+  double preco_atual = 2;
+}
+
+message QueryIncidentStatsRequest {
+  string borough = 1;
+  string from_date = 2;
+  string to_date = 3;
+}
+
+message QueryIncidentStatsResponse {
+  string borough = 1;
+  int64 incident_count = 2;
+  double avg_inspections_30d = 3;
+  double avg_not_approved_rate = 4;
+}
