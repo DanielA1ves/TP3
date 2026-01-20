@@ -181,19 +181,6 @@
         transform: none;
       }
 
-      .toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-
-      .toggle input {
-        accent-color: var(--accent);
-        width: 16px;
-        height: 16px;
-      }
 
       .results {
         display: grid;
@@ -225,14 +212,6 @@
         letter-spacing: 0.08em;
         font-size: 0.7rem;
         color: var(--muted);
-      }
-
-      .insight {
-        padding: 14px 16px;
-        border-radius: 12px;
-        background: rgba(60, 142, 120, 0.15);
-        color: #1c3b30;
-        font-weight: 600;
       }
 
       .status {
@@ -400,6 +379,7 @@
                 Daily summary
               </button>
             </div>
+            <div class="status" id="status" data-tone="idle"></div>
 
           </form>
         </section>

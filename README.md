@@ -62,6 +62,8 @@ Note:
 - If building locally without Docker, run:
   protoc --go_out=. --go-grpc_out=. proto/xmlservice.proto
   from xml-service/.
+- The XML service validates incoming XML against `xml-service/schema/parkdata.xsd`
+  (override with `XML_SCHEMA_PATH`). Local builds require libxml2 and CGO enabled.
 - External APIs used:
   - Nominatim (OpenStreetMap): https://nominatim.openstreetmap.org/
   - Open-Meteo: https://open-meteo.com/
