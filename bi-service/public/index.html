@@ -248,6 +248,66 @@
         color: #17664d;
       }
 
+      .panel {
+        border-radius: 16px;
+        padding: 16px;
+        background: #fdfaf7;
+        border: 1px solid rgba(81, 96, 87, 0.15);
+        display: grid;
+        gap: 10px;
+      }
+
+      .panel h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px 6px;
+        border-bottom: 1px solid rgba(81, 96, 87, 0.12);
+      }
+
+      th {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .empty-row td {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .submit.secondary {
+        background: #2f6f64;
+        box-shadow: 0 12px 24px rgba(47, 111, 100, 0.2);
+      }
+
+      .submit.secondary:hover {
+        background: #275b52;
+      }
+
       .card.animate-1 {
         animation: fadeUp 0.9s ease both;
         animation-delay: 0.1s;
@@ -309,63 +369,9 @@
               <input
                 id="state"
                 type="text"
-                list="state-options"
                 placeholder="CA or California"
-                value="CA"
+                autocomplete="off"
               />
-              <datalist id="state-options">
-                <option value="AL">Alabama</option>
-                <option value="AK">Alaska</option>
-                <option value="AZ">Arizona</option>
-                <option value="AR">Arkansas</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="DE">Delaware</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="HI">Hawaii</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="IA">Iowa</option>
-                <option value="KS">Kansas</option>
-                <option value="KY">Kentucky</option>
-                <option value="LA">Louisiana</option>
-                <option value="ME">Maine</option>
-                <option value="MD">Maryland</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MS">Mississippi</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NE">Nebraska</option>
-                <option value="NV">Nevada</option>
-                <option value="NH">New Hampshire</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NY">New York</option>
-                <option value="NC">North Carolina</option>
-                <option value="ND">North Dakota</option>
-                <option value="OH">Ohio</option>
-                <option value="OK">Oklahoma</option>
-                <option value="OR">Oregon</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="RI">Rhode Island</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VT">Vermont</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WV">West Virginia</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
-                <option value="DC">District of Columbia</option>
-              </datalist>
             </label>
 
             <div class="row">
@@ -386,37 +392,74 @@
               <button class="chip" type="button" data-range="7" data-direction="future">
                 Next 7 days
               </button>
-              <label class="toggle">
-                <input id="use-default" type="checkbox" />
-                Use server default window
-              </label>
-              <button class="submit" type="submit">Run query</button>
+              <button class="submit" type="submit">Run stats</button>
+              <button class="submit secondary" type="button" id="run-top-parks">
+                Top parks
+              </button>
+              <button class="submit secondary" type="button" id="run-daily-summary">
+                Daily summary
+              </button>
             </div>
 
-            <div class="status" id="status" data-tone="idle">
-              Ready.
-            </div>
           </form>
         </section>
 
         <section class="card animate-2 results">
           <h2>Results</h2>
             <div class="metrics">
-              <div class="metric">
+            <div class="metric">
               <div class="label">Park Count</div>
-              <div class="value" id="metric-parks">-</div>
+              <div class="value" id="metric-parks">0</div>
             </div>
             <div class="metric">
               <div class="label">Avg Temp (C)</div>
-              <div class="value" id="metric-temp">-</div>
+              <div class="value" id="metric-temp">0.00</div>
             </div>
             <div class="metric">
               <div class="label" id="metric-precip-label">Avg Precip</div>
-              <div class="value" id="metric-precip">-</div>
+              <div class="value" id="metric-precip">0.00</div>
             </div>
           </div>
-          <div class="insight" id="insight">
-            Run a query to see a quick interpretation.
+          <div class="panel">
+            <h3>Top Parks by Temp</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Park</th>
+                    <th>Avg Temp (C)</th>
+                    <th>Avg Precip</th>
+                    <th>Obs</th>
+                  </tr>
+                </thead>
+                <tbody id="top-parks-body">
+                  <tr class="empty-row">
+                    <td colspan="5">Run the Top parks query to see results.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Daily State Summary</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Park Count</th>
+                    <th>Avg Temp (C)</th>
+                    <th>Avg Precip</th>
+                  </tr>
+                </thead>
+                <tbody id="daily-summary-body">
+                  <tr class="empty-row">
+                    <td colspan="4">Run the Daily summary query to see results.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       </main>
@@ -427,13 +470,15 @@
       const stateInput = document.getElementById("state");
       const fromInput = document.getElementById("from-date");
       const toInput = document.getElementById("to-date");
-      const useDefault = document.getElementById("use-default");
       const statusEl = document.getElementById("status");
       const parksEl = document.getElementById("metric-parks");
       const tempEl = document.getElementById("metric-temp");
       const precipEl = document.getElementById("metric-precip");
-      const insightEl = document.getElementById("insight");
       const submitButton = form.querySelector(".submit");
+      const topParksButton = document.getElementById("run-top-parks");
+      const dailySummaryButton = document.getElementById("run-daily-summary");
+      const topParksBody = document.getElementById("top-parks-body");
+      const dailySummaryBody = document.getElementById("daily-summary-body");
 
       function toDateInputValue(date) {
         const year = date.getFullYear();
@@ -462,17 +507,78 @@
 
         fromInput.value = toDateInputValue(start);
         toInput.value = toDateInputValue(end);
-        useDefault.checked = false;
       }
 
       function setStatus(message, tone) {
+        if (!statusEl) {
+          return;
+        }
         statusEl.textContent = message;
         statusEl.dataset.tone = tone;
       }
 
-      function setLoading(isLoading) {
+      function setStatsLoading(isLoading) {
         submitButton.disabled = isLoading;
-        submitButton.textContent = isLoading ? "Fetching..." : "Run query";
+        submitButton.textContent = isLoading ? "Fetching..." : "Run stats";
+      }
+
+      function setButtonLoading(button, isLoading, defaultText, loadingText) {
+        if (!button) {
+          return;
+        }
+        button.disabled = isLoading;
+        button.textContent = isLoading ? loadingText : defaultText;
+      }
+
+      function renderTopParks(items) {
+        topParksBody.innerHTML = "";
+        if (!items.length) {
+          const row = document.createElement("tr");
+          row.className = "empty-row";
+          row.innerHTML = "<td colspan=\"5\">No results for this query.</td>";
+          topParksBody.appendChild(row);
+          return;
+        }
+
+        items.forEach((item, index) => {
+          const row = document.createElement("tr");
+          const avgTemp = Number(item.avgTempMeanC || 0).toFixed(2);
+          const avgPrecip = Number(item.avgPrecipitationValue || 0).toFixed(2);
+          const obs = Number(item.observationCount || 0).toString();
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.parkName || item.parkCode || "-"}</td>
+            <td>${avgTemp}</td>
+            <td>${avgPrecip}</td>
+            <td>${obs}</td>
+          `;
+          topParksBody.appendChild(row);
+        });
+      }
+
+      function renderDailySummary(items) {
+        dailySummaryBody.innerHTML = "";
+        if (!items.length) {
+          const row = document.createElement("tr");
+          row.className = "empty-row";
+          row.innerHTML = "<td colspan=\"4\">No results for this query.</td>";
+          dailySummaryBody.appendChild(row);
+          return;
+        }
+
+        items.forEach((item) => {
+          const row = document.createElement("tr");
+          const avgTemp = Number(item.avgTempMeanC || 0).toFixed(2);
+          const avgPrecip = Number(item.avgPrecipitationValue || 0).toFixed(2);
+          const count = Number(item.parkCount || 0).toString();
+          row.innerHTML = `
+            <td>${item.date || "-"}</td>
+            <td>${count}</td>
+            <td>${avgTemp}</td>
+            <td>${avgPrecip}</td>
+          `;
+          dailySummaryBody.appendChild(row);
+        });
       }
 
       function updateMetrics(stats) {
@@ -483,8 +589,7 @@
         const toDateValue = toInput.value
           ? new Date(`${toInput.value}T00:00:00`)
           : null;
-        const useProbability =
-          !useDefault.checked && toDateValue && toDateValue > today;
+        const useProbability = toDateValue && toDateValue > today;
 
         parksEl.textContent = parkCount.toString();
         tempEl.textContent = avgTemp.toFixed(2);
@@ -497,28 +602,6 @@
           precipEl.textContent = avgPrecipValue.toFixed(2);
         }
 
-        if (parkCount === 0) {
-          insightEl.textContent =
-            "No parks found for this state and date range.";
-          return;
-        }
-
-        if (useProbability && avgPrecipValue > 50) {
-          insightEl.textContent =
-            "Higher precipitation expected. Plan for wetter conditions.";
-        } else if (useProbability && avgPrecipValue > 20) {
-          insightEl.textContent =
-            "Moderate precipitation. Good time for mixed-weather planning.";
-        } else if (!useProbability && avgPrecipValue > 5) {
-          insightEl.textContent =
-            "Higher precipitation totals. Expect wetter conditions.";
-        } else if (!useProbability && avgPrecipValue > 1) {
-          insightEl.textContent =
-            "Moderate precipitation totals. Mixed conditions expected.";
-        } else {
-          insightEl.textContent =
-            "Low precipitation. Conditions look relatively dry.";
-        }
       }
 
       async function fetchStats() {
@@ -526,18 +609,18 @@
           setStatus("Select a state to query.", "error");
           return;
         }
-        if (!useDefault.checked && (!fromInput.value || !toInput.value)) {
-          setStatus("Select a date range or use server default.", "error");
+        if (!fromInput.value || !toInput.value) {
+          setStatus("Select a date range.", "error");
           return;
         }
 
         const variables = {
           state: normalizeStateValue(stateInput.value),
-          fromDate: useDefault.checked ? "" : fromInput.value,
-          toDate: useDefault.checked ? "" : toInput.value,
+          fromDate: fromInput.value,
+          toDate: toInput.value,
         };
 
-        setLoading(true);
+        setStatsLoading(true);
         setStatus("Querying park stats...", "idle");
 
         try {
@@ -575,7 +658,126 @@
           console.error(err);
           setStatus(`Error: ${err.message}`, "error");
         } finally {
-          setLoading(false);
+          setStatsLoading(false);
+        }
+      }
+
+      async function fetchTopParks() {
+        if (!stateInput.value.trim()) {
+          setStatus("Select a state to query.", "error");
+          return;
+        }
+        if (!fromInput.value || !toInput.value) {
+          setStatus("Select a date range.", "error");
+          return;
+        }
+
+        const variables = {
+          state: normalizeStateValue(stateInput.value),
+          fromDate: fromInput.value,
+          toDate: toInput.value,
+          limit: 5,
+        };
+
+        setButtonLoading(topParksButton, true, "Top parks", "Fetching...");
+        setStatus("Querying top parks...", "idle");
+
+        try {
+          const response = await fetch("/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `
+                query ($state: String!, $fromDate: String, $toDate: String, $limit: Int) {
+                  topParksByTemp(
+                    state: $state,
+                    fromDate: $fromDate,
+                    toDate: $toDate,
+                    limit: $limit
+                  ) {
+                    parkCode
+                    parkName
+                    avgTempMeanC
+                    avgPrecipitationValue
+                    observationCount
+                  }
+                }
+              `,
+              variables,
+            }),
+          });
+
+          const payload = await response.json();
+          if (payload.errors) {
+            const message = payload.errors[0]?.message || "Query failed.";
+            throw new Error(message);
+          }
+
+          renderTopParks(payload.data.topParksByTemp || []);
+          setStatus("Top parks updated.", "success");
+        } catch (err) {
+          console.error(err);
+          setStatus(`Error: ${err.message}`, "error");
+        } finally {
+          setButtonLoading(topParksButton, false, "Top parks", "Fetching...");
+        }
+      }
+
+      async function fetchDailySummary() {
+        if (!stateInput.value.trim()) {
+          setStatus("Select a state to query.", "error");
+          return;
+        }
+        if (!fromInput.value || !toInput.value) {
+          setStatus("Select a date range.", "error");
+          return;
+        }
+
+        const variables = {
+          state: normalizeStateValue(stateInput.value),
+          fromDate: fromInput.value,
+          toDate: toInput.value,
+        };
+
+        setButtonLoading(dailySummaryButton, true, "Daily summary", "Fetching...");
+        setStatus("Querying daily summary...", "idle");
+
+        try {
+          const response = await fetch("/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `
+                query ($state: String!, $fromDate: String, $toDate: String) {
+                  dailyStateSummary(
+                    state: $state,
+                    fromDate: $fromDate,
+                    toDate: $toDate
+                  ) {
+                    date
+                    parkCount
+                    avgTempMeanC
+                    avgPrecipitationValue
+                  }
+                }
+              `,
+              variables,
+            }),
+          });
+
+          const payload = await response.json();
+          if (payload.errors) {
+            const message = payload.errors[0]?.message || "Query failed.";
+            throw new Error(message);
+          }
+
+          renderDailySummary(payload.data.dailyStateSummary || []);
+          setStatus("Daily summary updated.", "success");
+        } catch (err) {
+          console.error(err);
+          setStatus(`Error: ${err.message}`, "error");
+        } finally {
+          setButtonLoading(dailySummaryButton, false, "Daily summary", "Fetching...");
         }
       }
 
@@ -587,21 +789,19 @@
         });
       });
 
-      useDefault.addEventListener("change", () => {
-        if (useDefault.checked) {
-          setStatus("Using server default time window.", "idle");
-        } else {
-          setStatus("Select a date range to refine results.", "idle");
-        }
-      });
-
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         fetchStats();
       });
 
-      setDateRange(30, "past");
-      fetchStats();
+      topParksButton.addEventListener("click", () => {
+        fetchTopParks();
+      });
+
+      dailySummaryButton.addEventListener("click", () => {
+        fetchDailySummary();
+      });
+
     </script>
   </body>
 </html>
