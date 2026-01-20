@@ -1,32 +1,19 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: postgres:15
-    container_name: tp3-postgres
-    environment:
-      POSTGRES_USER: tp3
-      POSTGRES_PASSWORD: tp3
-      POSTGRES_DB: tp3
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
-
   xml-service:
     build: ./xml-service
     container_name: tp3-xml-service
     environment:
-      DB_HOST: postgres
-      DB_PORT: "5432"
-      DB_USER: tp3
-      DB_PASSWORD: tp3
-      DB_NAME: tp3
+      DB_HOST: "${DB_HOST}"
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_NAME: "${DB_NAME}"
+      DB_SSLMODE: "${DB_SSLMODE:-require}"
+      DB_URL: "${DB_URL}"
       HTTP_PORT: "8080"
       GRPC_PORT: "9090"
       DEFAULT_WEBHOOK_URL: http://processor:3000/webhook
-    depends_on:
-      - postgres
+      XML_SCHEMA_PATH: "schema/parkdata.xsd"
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -47,12 +34,14 @@ services:
       GEOCODING_API_URL: "${GEOCODING_API_URL:-https://nominatim.openstreetmap.org/search}"
       GEOCODING_COUNTRY_CODE: "${GEOCODING_COUNTRY_CODE:-us}"
       GEOCODING_MIN_DELAY_MS: "${GEOCODING_MIN_DELAY_MS:-1000}"
+      GEOCODING_ENABLED: "${GEOCODING_ENABLED:-true}"
       NOMINATIM_USER_AGENT: "${NOMINATIM_USER_AGENT:-tp3-processor/1.0}"
       NOMINATIM_EMAIL: "${NOMINATIM_EMAIL}"
       WEATHER_ARCHIVE_API_URL: "${WEATHER_ARCHIVE_API_URL:-https://archive-api.open-meteo.com/v1/archive}"
       WEATHER_FORECAST_API_URL: "${WEATHER_FORECAST_API_URL:-https://api.open-meteo.com/v1/forecast}"
       WEATHER_HISTORY_DAYS: "${WEATHER_HISTORY_DAYS:-30}"
       WEATHER_FORECAST_DAYS: "${WEATHER_FORECAST_DAYS:-7}"
+      PROCESS_LATEST_ONLY: "${PROCESS_LATEST_ONLY:-false}"
       DELETE_AFTER_PROCESS: "${DELETE_AFTER_PROCESS:-true}"
       POLL_INTERVAL_MS: "${POLL_INTERVAL_MS:-15000}"
     depends_on:

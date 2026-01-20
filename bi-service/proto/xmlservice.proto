@@ -4,8 +4,9 @@ package xmlservice;
 
 service XmlService {
   rpc GetDocument (GetDocumentRequest) returns (GetDocumentResponse);
-  rpc QueryCurrentPrice (QueryCurrentPriceRequest) returns (QueryCurrentPriceResponse);
-  rpc QueryIncidentStats (QueryIncidentStatsRequest) returns (QueryIncidentStatsResponse);
+  rpc QueryParkStats (QueryParkStatsRequest) returns (QueryParkStatsResponse);
+  rpc QueryTopParksByTemp (QueryTopParksByTempRequest) returns (QueryTopParksByTempResponse);
+  rpc QueryDailyStateSummary (QueryDailyStateSummaryRequest) returns (QueryDailyStateSummaryResponse);
 }
 
 message GetDocumentRequest {
@@ -19,24 +20,51 @@ message GetDocumentResponse {
   string mapper_version = 4;
 }
 
-message QueryCurrentPriceRequest {
-  string sku = 1;
-}
-
-message QueryCurrentPriceResponse {
-  string sku = 1;
-  double preco_atual = 2;
-}
-
-message QueryIncidentStatsRequest {
-  string borough = 1;
+message QueryParkStatsRequest {
+  string state = 1;
   string from_date = 2;
   string to_date = 3;
 }
 
-message QueryIncidentStatsResponse {
-  string borough = 1;
-  int64 incident_count = 2;
-  double avg_inspections_30d = 3;
-  double avg_not_approved_rate = 4;
+message QueryParkStatsResponse {
+  string state = 1;
+  int64 park_count = 2;
+  double avg_temp_mean_c = 3;
+  double avg_precipitation_value = 4;
+}
+
+message QueryTopParksByTempRequest {
+  string state = 1;
+  string from_date = 2;
+  string to_date = 3;
+  int32 limit = 4;
+}
+
+message ParkTemperatureRank {
+  string park_code = 1;
+  string park_name = 2;
+  double avg_temp_mean_c = 3;
+  double avg_precipitation_value = 4;
+  int32 observation_count = 5;
+}
+
+message QueryTopParksByTempResponse {
+  repeated ParkTemperatureRank items = 1;
+}
+
+message QueryDailyStateSummaryRequest {
+  string state = 1;
+  string from_date = 2;
+  string to_date = 3;
+}
+
+message DailyStateSummary {
+  string date = 1;
+  int32 park_count = 2;
+  double avg_temp_mean_c = 3;
+  double avg_precipitation_value = 4;
+}
+
+message QueryDailyStateSummaryResponse {
+  repeated DailyStateSummary items = 1;
 }

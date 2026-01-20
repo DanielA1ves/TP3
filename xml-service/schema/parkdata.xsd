@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ParkData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Parks" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Park" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Code" type="xs:string" minOccurs="0" />
+                    <xs:element name="Name" type="xs:string" minOccurs="0" />
+                    <xs:element name="State" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Code" type="xs:string" minOccurs="0" />
+                          <xs:element name="Name" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Location" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Text" type="xs:string" minOccurs="0" />
+                          <xs:element name="Designation" type="xs:string" minOccurs="0" />
+                          <xs:element name="Description" type="xs:string" minOccurs="0" />
+                          <xs:element name="Url" type="xs:string" minOccurs="0" />
+                          <xs:element name="CrawlDate" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Geo" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Latitude" type="xs:string" minOccurs="0" />
+                          <xs:element name="Longitude" type="xs:string" minOccurs="0" />
+                          <xs:element name="County" type="xs:string" minOccurs="0" />
+                          <xs:element name="Municipality" type="xs:string" minOccurs="0" />
+                          <xs:element name="DisplayName" type="xs:string" minOccurs="0" />
+                          <xs:element name="Source" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Weather" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Observation" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Date" type="xs:string" minOccurs="0" />
+                                <xs:element name="TempMeanC" type="xs:string" minOccurs="0" />
+                                <xs:element name="Precipitation" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="SumMm" type="xs:string" minOccurs="0" />
+                                      <xs:element name="Probability" type="xs:string" minOccurs="0" />
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Timezone" type="xs:string" minOccurs="0" />
+                                <xs:element name="Source" type="xs:string" minOccurs="0" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="generatedAt" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

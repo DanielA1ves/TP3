@@ -17,21 +17,51 @@ ALL_STATE_CODES = [
     "DC",
 ]
 
-DEFAULT_STATE_CODES = ["CA", "AZ", "UT", "CO", "NM"]
+DEFAULT_STATE_CODES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC"]
 
 
 def parse_state_codes():
     raw = os.getenv("NPS_STATE_CODES", "").strip()
     if raw:
-        if raw.upper() == "ALL":
+        normalized_raw = raw.strip().strip("'\"[]() ").upper()
+        if normalized_raw == "ALL":
             return ALL_STATE_CODES
-        return [value.strip().upper() for value in raw.split(",") if value.strip()]
+        codes = []
+        for value in raw.split(","):
+            cleaned = value.strip().strip("'\"[]() ").upper()
+            if not cleaned:
+                continue
+            if cleaned == "ALL":
+                return ALL_STATE_CODES
+            codes.append(cleaned)
+        if codes:
+            seen = set()
+            deduped = []
+            for code in codes:
+                if code in seen:
+                    continue
+                seen.add(code)
+                deduped.append(code)
+            return deduped
     return DEFAULT_STATE_CODES
 
 
 def parse_int(value, fallback):
     try:
         parsed = int(value)
+        return parsed
+    except (TypeError, ValueError):
+        return fallback
+
+
+def parse_float(value, fallback):
+    try:
+        parsed = float(value)
         return parsed
     except (TypeError, ValueError):
         return fallback
@@ -130,7 +160,7 @@ def parse_parks_from_state(html, state_code, base_url):
     return parks, state_name
 
 
-def main():
+def run_once():
     bucket = getenv_with_fallback("SUPABASE_S3_BUCKET", "S3_BUCKET")
     endpoint = getenv_with_fallback("SUPABASE_S3_ENDPOINT", "S3_ENDPOINT")
     access_key = getenv_with_fallback("SUPABASE_S3_ACCESS_KEY", "S3_ACCESS_KEY")
@@ -217,6 +247,24 @@ def main():
     key = f"{prefix}{filename}"
     s3.upload_file(local_path, bucket, key)
     print(f"Uploaded {local_path} to s3://{bucket}/{key}")
+
+
+def main():
+    interval = parse_float(os.getenv("CRAWLER_INTERVAL_SECONDS", "0"), 0)
+    if interval <= 0:
+        run_once()
+        return
+
+    while True:
+        started_at = time.time()
+        try:
+            run_once()
+        except Exception as exc:
+            print(f"Crawler run failed: {exc}")
+        elapsed = time.time() - started_at
+        sleep_for = max(0, interval - elapsed)
+        if sleep_for:
+            time.sleep(sleep_for)
 
 
 if __name__ == "__main__":
